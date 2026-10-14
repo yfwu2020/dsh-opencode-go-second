@@ -1,0 +1,8 @@
+- insert:
+    - id: llm-opencode-go-second
+      name: dsh-opencode-go-second
+      config:
+        providers:
+          opencode-go-second:
+            displayName: OpenCode Go · 2
+            apiKeyEnv: OPENCODE_API_KEY

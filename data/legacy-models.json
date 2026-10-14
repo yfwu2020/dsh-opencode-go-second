@@ -1,0 +1,29 @@
+{
+  "deepseek-flash": {
+    "id": "deepseek-flash",
+    "compat": {
+      "requiresReasoningContentOnAssistantMessages": true
+    },
+    "name": "DeepSeek Flash",
+    "contextWindow": 1000000,
+    "maxTokens": 384000,
+    "reasoningEfforts": {
+      "false": "none",
+      "low": "low",
+      "high": "high",
+      "max": "max"
+    }
+  },
+  "omen-alpha": {
+    "id": "omen-alpha",
+    "name": "Omen Alpha",
+    "contextWindow": 500000,
+    "maxTokens": 128000,
+    "reasoningEfforts": {
+      "false": "none",
+      "low": "low",
+      "high": "high",
+      "max": "max"
+    }
+  }
+}

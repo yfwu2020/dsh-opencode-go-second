@@ -1,0 +1,8 @@
+node_modules/
+*.log
+backups/
+deployment.json
+docs/superpowers/
+.env
+.env.*
+.DS_Store
