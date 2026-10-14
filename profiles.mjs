@@ -7,12 +7,12 @@ import { goStream } from './go-stream.mjs';
 export const ROUTE = 'opencode-go-second';
 export const LABEL = 'OpenCode Go · 2';
 const base = opencodeGoProvider();
-const reservedHeaders = new Set(['authorization', 'x-api-key', 'x-opencode-session', 'user-agent']);
+const reservedHeaders = new Set(['authorization', 'x-api-key', 'x-goog-api-key', 'x-opencode-session', 'user-agent']);
 const invalid = message => { throw new LlmError(message, 'INVALID_CONFIG'); };
 const hasCompatibility = compat => Object.values(compat ?? {}).some(value =>
   value !== undefined && !(value && typeof value === 'object' && !Object.keys(value).length));
 
-export function buildProfiles(raw) {
+export function buildProfiles(raw, catalog = secondGoModels, { allowMissingMetadata = false } = {}) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) invalid('Go providers must be a dictionary');
   if (Object.keys(raw).some(key => key !== ROUTE)) invalid(`This plugin owns only ${ROUTE}`);
   const source = raw[ROUTE];
@@ -28,11 +28,11 @@ export function buildProfiles(raw) {
   }
   const parsed = Config({ providers: { [ROUTE]: structuredClone(source) } }).providers.get()[ROUTE];
   if (!parsed.apiKeyEnv) invalid('Configure a credential reference for the second Go connection');
-  const entries = source.models?.length ? source.models : [...secondGoModels.values()].map(model => ({ id: model.id }));
+  const entries = source.models?.length ? source.models : [...catalog.values()].map(model => ({ id: model.id }));
   if (!Array.isArray(entries)) invalid('Go models must be an array');
   const seen = new Set();
-  const models = entries.map(entry => {
-    const native = secondGoModels.get(entry.id);
+  const models = entries.filter(entry => !allowMissingMetadata || catalog.has(entry.id)).map(entry => {
+    const native = catalog.get(entry.id);
     if (!native) invalid(`No verified Go protocol metadata for ${entry.id}`);
     if (seen.has(entry.id)) invalid(`Duplicate Go model ${entry.id}`);
     seen.add(entry.id);

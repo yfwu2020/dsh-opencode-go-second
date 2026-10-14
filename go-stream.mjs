@@ -1,3 +1,7 @@
+import { googleGenerativeAIApi } from '@earendil-works/pi-ai/api/google-generative-ai.lazy';
+import { withOpenCodeSessionHeader } from '@earendil-works/pi-ai/providers/opencode-headers';
+const google = withOpenCodeSessionHeader(googleGenerativeAIApi());
+
 /** Keep SDK vendor behavior separate from the public DSH connection identity. */
 export function goStream(base, method, route, model, context, options) {
   const wireModel = { ...model, provider: 'opencode-go' };
@@ -6,7 +10,15 @@ export function goStream(base, method, route, model, context, options) {
     messages: context.messages.map(message => message.role === 'assistant' && message.provider === route
       ? { ...message, provider: 'opencode-go' } : message),
   };
-  const source = base[method](wireModel, wireContext, options);
+  let source;
+  if (model.api === 'google-generative-ai') {
+    // The pinned SDK predates Gemini 4's name. Use its explicit Google thinking
+    // option instead of its name-based Gemini 3 detection; retain SDK replay.
+    if (method === 'streamSimple') {
+      const level = ['low', 'medium', 'high'].includes(options?.reasoning) ? options.reasoning.toUpperCase() : undefined;
+      source = google.stream(wireModel, wireContext, { ...options, thinking: { enabled: model.reasoning && options?.reasoning !== 'off', ...(level ? { level } : {}) } });
+    } else source = google[method](wireModel, wireContext, options);
+  } else source = base[method](wireModel, wireContext, options);
   const routedMessage = message => message?.provider === 'opencode-go'
     ? { ...message, provider: route } : message;
   return {

@@ -3,6 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import * as plugin from '../index.mjs';
 import { apply as nativeApply } from '@deepseek-ai/dsh-llm-pi-ai';
+import { buildProfiles } from '../profiles.mjs';
 const ids = JSON.parse(readFileSync(new URL('../data/model-ids.json', import.meta.url)));
 const first = JSON.parse(readFileSync(new URL('./original-providers.json', import.meta.url)))['opencode-go'];
 const route = 'opencode-go-second';
@@ -23,7 +24,7 @@ function mount(raw = { [route]: { displayName: 'OpenCode Go · 第二套', apiKe
       registerModelDiscovery(ns, fn) { state.discoveryNs = ns; state.discover = fn; },
     },
   };
-  apply(ctx, { providers: { get: () => current } });
+  apply(ctx, { providers: { get: () => current } }, { cacheFile: null });
   state.replace = raw => { current = raw; state.handlers['loader/volatile-update']?.(); };
   return state;
 }
@@ -135,7 +136,7 @@ test('unsupported routes, protocols and reserved headers are refused without I/O
     { [route]: { baseURL: 'https://example.com', apiKeyEnv: 'OPENCODE_API_KEY' } },
     { [route]: { headers: { 'X-OpenCode-Session': 'fixed' }, apiKeyEnv: 'OPENCODE_API_KEY' } },
     { [route]: { models: [{ id: 'unverified-new-model' }], apiKeyEnv: 'OPENCODE_API_KEY' } },
-  ]) assert.throws(() => mount(raw));
+  ]) assert.throws(() => buildProfiles(raw));
   await assert.rejects(() => state.adapter.resolveModel(route, 'unverified-new-model'));
   assert.equal(seen.length, before);
 });
