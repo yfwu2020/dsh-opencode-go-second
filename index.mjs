@@ -3,7 +3,6 @@ import { LlmError, assertUsableApiKey, resolveImageAttachmentAccess } from '@dee
 import { buildProfiles, ROUTE, LABEL } from './profiles.mjs';
 import { discoverGoModels } from './discovery.mjs';
 import { createCatalogStore } from './catalog-store.mjs';
-import { syncGoModels } from './sync.mjs';
 
 export { Config };
 export const name = 'llm-opencode-go-second';
@@ -66,27 +65,5 @@ export function apply(ctx, config, options = {}) {
   }, signal, catalog, refreshMetadata);
   ctx.llm.registerModelDiscovery(settingsNs, discover);
   ctx.on('loader/volatile-update', update);
-  ctx.inject(['settings'], child => {
-    child.effect(() => child.settings.configure({ auto: false }, ctx.fiber));
-    child.effect(() => {
-      const controller = new AbortController();
-      let running;
-      const synchronize = () => {
-        if (running || controller.signal.aborted) return running;
-        running = syncGoModels({
-          settings: child.settings, ns: settingsNs, catalog, signal: controller.signal,
-          discover: signal => discover({ provider: ROUTE }, signal, true),
-        }).then(() => { if (!controller.signal.aborted) update(); }).catch(() => {
-          // Never log SDK/HTTP error details that may contain request headers.
-          if (!controller.signal.aborted) ctx.logger.warn('Go 自动同步未完成；保留已保存的模型，稍后重试。');
-        }).finally(() => { running = undefined; });
-        return running;
-      };
-      const initial = setTimeout(synchronize, 1000); initial.unref?.();
-      const interval = setInterval(synchronize, 6 * 60 * 60 * 1000); interval.unref?.();
-      child.on('credentials/record-updated', synchronize);
-      child.on('credentials/reference-updated', synchronize);
-      return () => { controller.abort(); clearTimeout(initial); clearInterval(interval); };
-    });
-  });
+  ctx.inject(['settings'], child => child.effect(() => child.settings.configure({ auto: false }, ctx.fiber)));
 }

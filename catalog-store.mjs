@@ -6,7 +6,7 @@ import { readJson } from './json-response.mjs';
 
 export const catalogFile = join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'dsh-opencode-go-second', 'catalog.json');
 export function createCatalogStore({ file = catalogFile, fetcher = (...args) => fetch(...args), onWarning = () => {} } = {}) {
-  const state = { models: new Map(secondGoModels), version: 0, syncedIds: new Set(secondGoModels.keys()) };
+  const state = { models: new Map(secondGoModels), version: 0 };
   let published = { npm: '@ai-sdk/openai-compatible', models: {} };
   if (file) {
     try {
@@ -15,7 +15,6 @@ export function createCatalogStore({ file = catalogFile, fetcher = (...args) => 
       const cached = buildCatalog(Object.keys(saved.models), saved);
       published = saved;
       state.models = new Map([...secondGoModels, ...cached]);
-      if (Array.isArray(saved.syncedIds) && saved.syncedIds.every(id => state.models.has(id))) state.syncedIds = new Set(saved.syncedIds);
     } catch (error) { if (error.code !== 'ENOENT') onWarning('模型缓存无效，将使用随插件提供的目录。'); }
   }
   const persist = next => {
@@ -27,17 +26,12 @@ export function createCatalogStore({ file = catalogFile, fetcher = (...args) => 
       writeFileSync(temporary, encoded, { mode: 0o600 }); renameSync(temporary, file);
     }
   };
-  state.recordSynchronized = ids => {
-    const combined = [...new Set([...state.syncedIds, ...ids])];
-    const next = { ...published, syncedIds: combined };
-    persist(next); published = next; state.syncedIds = new Set(combined);
-  };
   state.refresh = async (ids, signal) => {
     const combined = signal ? AbortSignal.any([signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000);
     const data = await readJson(await fetcher('https://models.dev/api.json', { signal: combined, redirect: 'error' }), 32 * 1024 * 1024);
     const provider = data?.['opencode-go'];
     if (!provider || typeof provider.models !== 'object' || Array.isArray(provider.models)) throw Error('Go 模型资料暂不可用');
-    const next = { npm: provider.npm, models: { ...published.models }, syncedIds: [...state.syncedIds] };
+    const next = { npm: provider.npm, models: { ...published.models } };
     const merged = new Map(state.models);
     for (const id of ids) {
       // Add new descriptors without changing live, already selected contracts.

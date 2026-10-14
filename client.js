@@ -139,7 +139,7 @@ window.__ModuleLoader__.load({
               h('span', { className: 'dsh-go2-heading' }, '模型'),
               h('span', { className: 'dsh-go2-meta', style: { marginLeft: 12 } }, `已启用 ${selected.length} / ${models.length}`)),
               button(busy ? '处理中…' : '获取可用模型', refresh)),
-            h('p', { className: 'dsh-go2-hint' }, '启动后自动同步，每 6 小时检查一次；保留手动关闭的模型。'),
+            h('p', { className: 'dsh-go2-hint' }, '点击获取可用模型刷新列表，保存后生效。'),
             h('div', { className: 'dsh-go2-tools' },
               h('input', { type: 'search', value: search, placeholder: '搜索模型名称或 ID', 'aria-label': '搜索模型', onChange: event => setSearch(event.target.value) }),
               button('全部启用', () => setSelected(models.map(model => model.id)), busy || selected.length === models.length)),
