@@ -3,21 +3,40 @@
 这是独立的 DeepSeek Harness 模型插件，只注册 `opencode-go-second`。
 第一套 `opencode-go` 和其他供应商继续由原生适配器管理。
 
-## 本地安装
+## 安装
 
-适用于 DeepSeek Harness `0.2.0-rc.2`，需要 Node.js `>=22.19.0`。
+已验证环境为 DeepSeek Harness `0.2.0-rc.2`、Node.js `>=22.19.0`。
+DSH 官方包通过精确版本的 peer dependencies 复用宿主；其他版本请先验证兼容性。
 
-1. 将仓库克隆到本地，进入项目目录运行 `npm ci`。
-2. 在 DSH desktop profile 的 `package.json` 中，将依赖
-   `dsh-opencode-go-second` 指向 `link:<项目的绝对路径>`，并在
-   `dsh.profile.bundles` 列表中添加 `dsh-opencode-go-second`。
-3. 在 profile 的 `cordis.patch.yml` 中添加插件条目；本项目同名文件提供条目示例。
-   合并条目，不覆盖已有 profile 文件。如果已有相同插件条目，请勿重复添加。
-4. 重启 DSH，在设置 → 模型 → OpenCode Go · 2 → 管理中配置 Go API 密钥，
-   获取可用模型后保存。
+桌面端可安装发布包：
 
-DSH profile 通常位于 `~/.dsh/profiles/desktop`。此插件用于新增独立连接；
-`migration.mjs` 仅供处理特定旧覆盖方案，运行前需备份并核对原配置。
+```sh
+dsh plugin --profile desktop add https://github.com/yfwu2020/dsh-opencode-go-second/releases/download/v0.2.2/dsh-opencode-go-second.tgz
+```
+
+Web 端将 `--profile desktop` 改为 `--profile web`。也可以从源码安装：
+
+```sh
+dsh plugin --profile desktop add github:yfwu2020/dsh-opencode-go-second
+```
+
+安装后重启 DSH，在设置 → 模型 → OpenCode Go · 2 → 管理中配置 **OpenCode Go**
+API 密钥，点击“获取可用模型”，选择后保存。模型是否能实际调用由账号权限、额度
+和上游服务状态决定，目录查询成功不代表逐个模型已通过推理测试。
+
+本插件新增独立的 `opencode-go-second` 连接，不替换原生适配器或其他供应商配置。
+默认使用密钥引用 `OPENCODE_API_KEY`；如果已在别处使用相同引用，请先为新连接
+选择独立引用，避免更新密钥时影响使用同一引用的其他连接。
+
+### 本地开发
+
+克隆仓库后运行 `npm ci` 和 `npm test`。需要联调时，将 DSH profile 的
+`package.json` 依赖指向 `link:<项目的绝对路径>`，在 `dsh.profile.bundles` 中添加
+`dsh-opencode-go-second`，并合并本仓库 `cordis.patch.yml` 中的条目；不要覆盖已有
+profile 文件。DSH profile 通常位于 `~/.dsh/profiles/desktop`。
+
+`migration.mjs` 仅供处理本项目特定的旧覆盖方案，不随发布包交付。
+普通安装不需要运行它；维护旧方案前应备份并核对原配置。
 
 ## 使用与隔离
 

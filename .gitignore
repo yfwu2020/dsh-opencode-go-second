@@ -6,3 +6,7 @@ docs/superpowers/
 .env
 .env.*
 .DS_Store
+
+# Local analysis output
+.archify/
+*.tgz
