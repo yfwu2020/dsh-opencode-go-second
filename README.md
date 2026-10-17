@@ -5,13 +5,14 @@
 
 ## 安装
 
-已验证环境为 DeepSeek Harness `0.2.0-rc.2`、Node.js `>=22.19.0`。
-DSH 官方包通过精确版本的 peer dependencies 复用宿主；其他版本请先验证兼容性。
+适用于 DeepSeek Harness `0.2.1-rc.1` / `0.2.1-rc.2`，需要 Node.js `>=22.19.0`。
+DSH 官方包通过 peer dependencies 复用宿主，模型 SDK 使用 `pi-ai 1.1.0`。
+插件兼容范围通过新版 `engines.dsh` 声明。仍使用 DSH `0.2.0-rc.2` 时请保留插件 `v0.2.2`。
 
 桌面端可安装发布包：
 
 ```sh
-dsh plugin --profile desktop add https://github.com/yfwu2020/dsh-opencode-go-second/releases/download/v0.2.2/dsh-opencode-go-second.tgz
+dsh plugin --profile desktop add https://github.com/yfwu2020/dsh-opencode-go-second/releases/download/v0.3.0/dsh-opencode-go-second.tgz
 ```
 
 Web 端将 `--profile desktop` 改为 `--profile web`。也可以从源码安装：
@@ -58,8 +59,8 @@ profile 文件。DSH profile 通常位于 `~/.dsh/profiles/desktop`。
 
 ## 实现
 
-依赖官方发布的 `@deepseek-ai/dsh-llm-pi-ai@0.2.0-rc.2` 和
-`@earendil-works/pi-ai@0.87.1`，复用公开的 `PiAiAdapter` 以及原生 Go provider。
+依赖官方发布的 `@deepseek-ai/dsh-llm-pi-ai@0.2.1-rc.1` / `0.2.1-rc.2` 和
+`@earendil-works/pi-ai@1.1.0`，复用公开的 `PiAiAdapter` 以及原生 Go provider。
 没有复制核心适配器源码、替换原生包或导入 app.asar 内的绝对路径。
 `package-lock.json` 固定依赖版本；升级 DSH 后仍需检查公开接口的兼容性。
 
@@ -93,7 +94,7 @@ Completions、Responses、Anthropic Messages 和 Google Generative AI 四种协�
 运行 `npm test` 验证实际官方适配器/SDK 对 38 个模型的接口选择、密钥与会话
 隔离、流式解析、错误结果、设置注册、模型发现和第一套迁移保持不变。
 还覆盖启动时不发起查询、不创建刷新计时器、手动发现不自动保存，以及缓存、
-Gemini 思考等级、认证和工具回放。
+Gemini 思考等级、认证、工具回放，以及传输不响应取消时的流空闲超时。
 测试替换网络传输，不产生模型调用费用；通过并不代表 38 个模型都完成了真实推理。
 实际可用性受账号权限、额度、地区和服务端状态影响。
 
