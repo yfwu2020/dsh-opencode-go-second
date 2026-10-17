@@ -114,3 +114,15 @@ Gemini 思考等级、认证、工具回放，以及传输不响应取消时的�
 仓库不包含真实 API 密钥、密码、个人路径、账号标识、日志或部署备份。
 配置中的 `OPENCODE_API_KEY` 等名称是密钥引用，不是密钥值。测试使用虚构
 凭据和示例会话标识。依赖目录和本地环境文件由 `.gitignore` 排除。
+
+## 发布新版本
+
+本仓库的 `.github/workflows/publish.yml` 使用 npm Trusted Publisher（OIDC）。
+绑定 GitHub 用户 `yfwu2020`、仓库 `dsh-opencode-go-second`、工作流文件名
+`publish.yml`，环境名称留空，并允许 `npm publish`；不需要配置 npm 发布密钥。
+
+先同步修改 `package.json` 和 `package-lock.json` 的版本号，提交并推送到 GitHub，
+然后为该提交创建同版本的正式 Release（例如版本 `0.3.2` 对应标签 `v0.3.2`）。
+工作流检查版本号、安装固定依赖并运行测试，通过后自动发布到 npm 的 `latest`。
+普通代码推送和预发布 Release 不会触发正式发布。工作流也可手动指定已有标签重试；
+已成功发布的 npm 版本不能重复发布，应检查上次结果后再决定是否重试。

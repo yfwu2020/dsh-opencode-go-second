@@ -1,6 +1,6 @@
 {
   "name": "dsh-opencode-go-second",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "description": "Independent OpenCode Go second connection for DeepSeek Harness",
   "main": "index.mjs",
