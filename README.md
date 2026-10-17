@@ -9,11 +9,14 @@
 DSH 官方包通过 peer dependencies 复用宿主，模型 SDK 使用 `pi-ai 1.1.0`。
 插件兼容范围通过新版 `engines.dsh` 声明。仍使用 DSH `0.2.0-rc.2` 时请保留插件 `v0.2.2`。
 
-桌面端可安装发布包：
+桌面端通过 npm 安装：
 
 ```sh
-dsh plugin --profile desktop add https://github.com/yfwu2020/dsh-opencode-go-second/releases/download/v0.3.0/dsh-opencode-go-second.tgz
+dsh plugin --profile desktop add dsh-opencode-go-second
 ```
+
+市场会通过 npm 检查已发布的新版，出现更新提示后点击更新即可。后续发布 npm 新版
+不需要逐次修改市场收录条目。开发目录的 `link:` 安装不参与 npm 自动检查更新。
 
 Web 端将 `--profile desktop` 改为 `--profile web`。也可以从源码安装：
 
