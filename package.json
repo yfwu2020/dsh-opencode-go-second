@@ -1,6 +1,6 @@
 {
   "name": "dsh-opencode-go-second",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "description": "Independent OpenCode Go second connection for DeepSeek Harness",
   "main": "index.mjs",
@@ -11,7 +11,7 @@
   },
   "engines": {
     "node": ">=22.19.0",
-    "dsh": ">=0.2.1-rc.1 <0.2.2-0"
+    "dsh": ">=0.2.1-rc.1 <0.2.3-0"
   },
   "scripts": {
     "test": "node --test tests/*.test.mjs"
@@ -21,10 +21,10 @@
   },
   "devDependencies": {
     "yaml": "2.8.1",
-    "@deepseek-ai/dsh-llm-pi-ai": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-llm": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-credentials": "0.2.1-rc.2",
-    "@deepseek-ai/schemastery": "3.18.5"
+    "@deepseek-ai/dsh-llm-pi-ai": "0.2.2-rc.1",
+    "@deepseek-ai/dsh-llm": "0.2.2-rc.1",
+    "@deepseek-ai/dsh-credentials": "0.2.2-rc.1",
+    "@deepseek-ai/schemastery": "3.19.0"
   },
   "dsh": {
     "bundle": {
@@ -69,10 +69,10 @@
     "data/"
   ],
   "peerDependencies": {
-    "@deepseek-ai/dsh-llm-pi-ai": ">=0.2.1-rc.1 <0.2.2-0",
-    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.1 <0.2.2-0",
-    "@deepseek-ai/dsh-credentials": ">=0.2.1-rc.1 <0.2.2-0",
-    "@deepseek-ai/schemastery": "~3.18.5"
+    "@deepseek-ai/dsh-llm-pi-ai": ">=0.2.1-rc.1 <0.2.3-0",
+    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.1 <0.2.3-0",
+    "@deepseek-ai/dsh-credentials": ">=0.2.1-rc.1 <0.2.3-0",
+    "@deepseek-ai/schemastery": ">=3.18.5 <3.20.0"
   },
   "publishConfig": {
     "access": "public",

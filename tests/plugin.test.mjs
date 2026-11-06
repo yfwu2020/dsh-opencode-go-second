@@ -12,7 +12,16 @@ function mount(raw = { [route]: { displayName: 'OpenCode Go · 第二套', apiKe
   const state = { routes: [], directory: [], handlers: {}, resolvedRefs: [], settingsId: null };
   const ctx = {
     fiber: { entry: { options: { id: 'llm-opencode-go-second' } } },
-    inject() {}, on(event, callback) { state.handlers[event] = callback; },
+    inject() {},
+    on(event, callback) { (state.handlers[event] ??= []).push(callback); },
+    // cordis 4.1 `waterfall`: run each listener with a continuation, then the fallback.
+    waterfall(event, ...args) {
+      const fallback = args.pop();
+      const listeners = [...state.handlers[event] ?? []];
+      let index = 0;
+      const step = (...rest) => index < listeners.length ? listeners[index++](...rest, step) : fallback(...rest);
+      return step(...args);
+    },
     logger: { warn() {}, error() {} },
     get(name) { if (name === 'credentials') return { resolve: async ref => {
       state.resolvedRefs.push(ref);
@@ -25,7 +34,7 @@ function mount(raw = { [route]: { displayName: 'OpenCode Go · 第二套', apiKe
     },
   };
   apply(ctx, { providers: { get: () => current } }, { cacheFile: null });
-  state.replace = raw => { current = raw; state.handlers['loader/volatile-update']?.(); };
+  state.replace = raw => { current = raw; for (const handler of state.handlers['loader/volatile-update'] ?? []) handler(); };
   return state;
 }
 const state = mount();

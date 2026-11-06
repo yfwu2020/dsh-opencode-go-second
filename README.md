@@ -5,7 +5,7 @@
 
 ## 安装
 
-适用于 DeepSeek Harness `0.2.1-rc.1` / `0.2.1-rc.2`，需要 Node.js `>=22.19.0`。
+适用于 DeepSeek Harness `0.2.1-rc.1` 及之后的 `0.2.2-rc.x`（`engines.dsh: >=0.2.1-rc.1 <0.2.3-0`），需要 Node.js `>=22.19.0`。
 DSH 官方包通过 peer dependencies 复用宿主，模型 SDK 使用 `pi-ai 1.1.0`。
 插件兼容范围通过新版 `engines.dsh` 声明。仍使用 DSH `0.2.0-rc.2` 时请保留插件 `v0.2.2`。
 
@@ -62,7 +62,7 @@ profile 文件。DSH profile 通常位于 `~/.dsh/profiles/desktop`。
 
 ## 实现
 
-依赖官方发布的 `@deepseek-ai/dsh-llm-pi-ai@0.2.1-rc.1` / `0.2.1-rc.2` 和
+依赖官方发布的 `@deepseek-ai/dsh-llm-pi-ai@0.2.2-rc.1`（同时兼容 `0.2.1-rc.1` / `0.2.1-rc.2`）和
 `@earendil-works/pi-ai@1.1.0`，复用公开的 `PiAiAdapter` 以及原生 Go provider。
 没有复制核心适配器源码、替换原生包或导入 app.asar 内的绝对路径。
 `package-lock.json` 固定依赖版本；升级 DSH 后仍需检查公开接口的兼容性。
