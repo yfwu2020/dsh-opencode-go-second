@@ -52,6 +52,28 @@ profile 文件。DSH profile 通常位于 `~/.dsh/profiles/desktop`。
 各模型按资料使用 Chat Completions、Responses 或 Anthropic Messages 接口；
 新加入的 Google 模型使用 Google Generative AI 接口。
 会话标识取自 DSH 当前聊天，User-Agent 复用 DSH 的请求标识。
+
+Go 网关按会话标识把请求固定到一个后端 cell。某个 cell 预填充容量不足时会立刻回
+`429 [prefill_cap_refused]`，而同样内容换一个会话标识通常能成功；用原标识重试只会
+反复撞同一堵墙。插件因此记住这次拒绝：本会话下一次请求改发 `<会话标识>#r1`
+（之后 `#r2`…，上限 32），换到别的 cell 继续，健康会话则保持原标识和它的缓存亲和性。
+上游偶发的 `[overloaded]` 不触发换 cell。
+
+需要更长重试窗口时，可在 profile 的 `cordis.patch.yml` 里给这个连接加
+`retryPolicy`（默认 5 次、500ms 起、上限 10s）：
+
+```yaml
+- id: llm-opencode-go-second
+  config:
+    providers:
+      opencode-go-second:
+        retryPolicy:
+          mode: normal
+          maxRetries: 6
+          backoff:
+            initialDelayMs: 2000
+            maxDelayMs: 20000
+```
 两个连接之间没有密钥轮换、自动降级或路由覆盖。
 
 迁移时第二套内部名称由 `opencode` 变为 `opencode-go-second`，避免与原生 Zen
